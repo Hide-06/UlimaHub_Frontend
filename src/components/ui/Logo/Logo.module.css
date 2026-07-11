@@ -1,0 +1,47 @@
+.logo-wrapper {
+  position: relative;
+  margin: 1em auto;
+  padding: 2em 0;
+}
+
+.four-pointed-star {
+  position: relative;
+  bottom: 0;
+  height: 100%;
+  margin: auto;
+}
+
+.four-pointed-star::before {
+  content: '';
+  position: absolute;
+  background: red;
+  width: 85%;
+  inset: 0;
+  height: 100%;
+  transform: rotate(-45deg) skewX(12.5deg) skewY(12.5deg);
+}
+
+.four-pointed-star::after {
+  content: '';
+  position: absolute;
+  background: red;
+  width: 85%;
+  inset: 0;
+  height: 100%;
+  transform: rotate(45deg) skewX(12.5deg) skewY(12.5deg);
+}
+
+.star {
+  margin: auto;
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  height: 75%;
+  width: 70%;
+  translate: 0 -5px;
+  background: var(--mantine-color-body);
+  border: 2px solid var(--mantine-color-body);
+  border-radius: 50%;
+  rotate: 0deg;
+  corner-shape: scoop;
+}

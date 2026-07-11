@@ -1,0 +1,29 @@
+.contenedor {
+  padding: 20px;
+}
+
+.encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+}
+
+.tarjetaFooter {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.miembros {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
