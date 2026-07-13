@@ -3,6 +3,7 @@ export interface Nota {
   title: string;
   content: string;
   date: string;
+  curso: string;
 }
 
 interface NotaApi {
@@ -10,6 +11,7 @@ interface NotaApi {
   title: string;
   content: string;
   updatedAt: string;
+  Curso: { nombre: string } | null;
 }
 
 const API_URL = 'http://localhost:3000/api/notas';
@@ -35,10 +37,11 @@ export async function cargarNotas(): Promise<Nota[]> {
     title: n.title,
     content: n.content,
     date: formatFecha(n.updatedAt),
+    curso: n.Curso?.nombre ?? '',
   }));
 }
 
-export async function crearNota() {
+export async function crearNota(cursoId?: number) {
   const usuario = usuarioActual();
   const res = await fetch(API_URL, {
     method: 'POST',
@@ -47,23 +50,33 @@ export async function crearNota() {
       title: 'Nueva Nota',
       content: '',
       usuario_id: usuario.id,
+      curso_id: cursoId,
     }),
   });
   const nota = await res.json();
-  return { id: nota.id, title: nota.title, content: nota.content, date: 'Hoy' };
+  return {
+    id: nota.id,
+    title: nota.title,
+    content: nota.content,
+    date: 'Hoy',
+    curso: nota.Curso?.nombre ?? '',
+  };
 }
 
 export async function actualizarNota(
   id: number,
-  datos: { title: string; content: string }
+  datos: { title: string; content: string; cursoId: number | null }
 ) {
   await fetch(`${API_URL}/${id}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(datos),
+    body: JSON.stringify({
+      title: datos.title,
+      content: datos.content,
+      curso_id: datos.cursoId,
+    }),
   });
 }
-
 export async function eliminarNota(id: number) {
   await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
 }

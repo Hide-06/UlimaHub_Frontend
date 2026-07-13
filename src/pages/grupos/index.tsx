@@ -1,17 +1,45 @@
-import { Badge, Button, Card, Grid, Text, Title, Group } from '@mantine/core';
-import { Users, BookOpen, MessageCircle } from 'lucide-react';
+import {
+  Badge,
+  Button,
+  Card,
+  Grid,
+  Text,
+  Title,
+  Group,
+  Modal,
+  Stack,
+  TextInput,
+  NumberInput,
+  Select,
+} from '@mantine/core';
+import { Users, BookOpen, MessageCircle, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import styles from './Grupos.module.css';
-import { cargarGrupos, unirseAGrupo } from '../../data/grupos';
+import {
+  cargarGrupos,
+  unirseAGrupo,
+  crearGrupo,
+  eliminarGrupo,
+} from '../../data/grupos';
 import type { Grupo } from '../../data/grupos';
+import { cargarCursos } from '../../data/cursos';
+import type { Curso } from '../../data/cursos';
 
 const GruposPage = () => {
   const [grupos, setGrupos] = useState<Grupo[]>([]);
   const navigate = useNavigate();
+  const [cursos, setCursos] = useState<Curso[]>([]);
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [nombre, setNombre] = useState('');
+  const [maximo, setMaximo] = useState<number | ''>('');
+  const [cursoSeleccionado, setCursoSeleccionado] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     cargarGrupos().then(setGrupos);
+    cargarCursos().then(setCursos);
   }, []);
 
   async function manejarUnirse(id: number) {
@@ -23,16 +51,39 @@ const GruposPage = () => {
     await unirseAGrupo(id);
   }
 
+  async function manejarEliminarGrupo(id: number) {
+    if (!window.confirm('¿Seguro que deseas eliminar este grupo?')) return;
+    setGrupos(grupos.filter((g) => g.id !== id));
+    await eliminarGrupo(id);
+  }
+
   function irAlChat(grupo: Grupo) {
     sessionStorage.setItem('grupoActivo', JSON.stringify(grupo));
     navigate('/chat');
+  }
+
+  async function manejarCrearGrupo() {
+    const curso = cursos.find((c) => c.nombre === cursoSeleccionado);
+    if (!nombre.trim() || !maximo || !curso) return;
+
+    await crearGrupo({
+      nombre: nombre.trim(),
+      maximo: Number(maximo),
+      cursoId: curso.id,
+    });
+
+    setGrupos(await cargarGrupos());
+    setNombre('');
+    setMaximo('');
+    setCursoSeleccionado(null);
+    setModalAbierto(false);
   }
 
   return (
     <div className={styles.contenedor}>
       <div className={styles.encabezado}>
         <Title order={2}>Grupos de Estudio</Title>
-        <Button>Crear grupo</Button>
+        <Button onClick={() => setModalAbierto(true)}>Crear grupo</Button>
       </div>
 
       <Grid>
@@ -45,9 +96,20 @@ const GruposPage = () => {
               withBorder
               className={styles.tarjeta}
             >
-              <Text fw={700} size="md">
-                {grupo.nombre}
-              </Text>
+              <Group justify="space-between">
+                <Text fw={700} size="md">
+                  {grupo.nombre}
+                </Text>
+                <Button
+                  size="xs"
+                  variant="subtle"
+                  color="red"
+                  px={4}
+                  onClick={() => manejarEliminarGrupo(grupo.id)}
+                >
+                  <Trash2 size={14} />
+                </Button>
+              </Group>
 
               <Group gap="xs">
                 <BookOpen size={14} />
@@ -99,6 +161,40 @@ const GruposPage = () => {
           </Grid.Col>
         ))}
       </Grid>
+
+      <Modal
+        opened={modalAbierto}
+        onClose={() => setModalAbierto(false)}
+        title="Nuevo grupo"
+      >
+        <Stack gap="sm">
+          <TextInput
+            label="Nombre del grupo"
+            placeholder="Ej: Estudio Parcial"
+            value={nombre}
+            onChange={(e) => setNombre(e.currentTarget.value)}
+          />
+          <Select
+            label="Curso"
+            placeholder="Selecciona un curso"
+            data={cursos.map((c) => ({ value: c.nombre, label: c.nombre }))}
+            value={cursoSeleccionado}
+            onChange={setCursoSeleccionado}
+          />
+          <NumberInput
+            label="Máximo de miembros"
+            value={maximo}
+            onChange={(v) => setMaximo(typeof v === 'number' ? v : '')}
+          />
+          <Button
+            fullWidth
+            onClick={manejarCrearGrupo}
+            disabled={!nombre.trim() || !maximo || !cursoSeleccionado}
+          >
+            Crear
+          </Button>
+        </Stack>
+      </Modal>
     </div>
   );
 };

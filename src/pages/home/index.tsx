@@ -54,14 +54,20 @@ const DashBoardPage = () => {
   const [todasLasTareas, setTodasLasTareas] = useState<Tarea[]>([]);
   const [eventosCalendario, setEventosCalendario] = useState<Evento[]>([]);
   const [misGrupos, setMisGrupos] = useState<Grupo[]>([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    cargarCursos().then(setCursos);
-    cargarTareas().then(setTodasLasTareas);
-    cargarEventos().then(setEventosCalendario);
-    cargarGrupos().then((grupos) =>
-      setMisGrupos(grupos.filter((g) => g.unido))
-    );
+    Promise.all([
+      cargarCursos().then(setCursos),
+      cargarTareas().then(setTodasLasTareas),
+      cargarEventos().then(setEventosCalendario),
+      cargarGrupos().then((grupos) =>
+        setMisGrupos(grupos.filter((g) => g.unido))
+      ),
+    ])
+      .catch(() => setError('No se pudo conectar con el servidor.'))
+      .finally(() => setCargando(false));
   }, []);
 
   const proximosCuatro = eventosCalendario
@@ -80,6 +86,18 @@ const DashBoardPage = () => {
       <Title order={2} mb="md">
         Dashboard
       </Title>
+
+      {cargando && (
+        <Text c="dimmed" mb="md">
+          Cargando tu dashboard...
+        </Text>
+      )}
+
+      {error && (
+        <Text c="red" mb="md">
+          {error}
+        </Text>
+      )}
 
       {/* buscador rapido arriba de todo */}
       <TextInput
@@ -167,7 +185,7 @@ const DashBoardPage = () => {
             {tareasFiltradas.length === 0 && (
               <Grid.Col span={12}>
                 <Text c="dimmed" size="sm">
-                  Nada que coincida con "{busqueda}"
+                  No tienes entregas pendientes o proximas
                 </Text>
               </Grid.Col>
             )}
@@ -209,6 +227,11 @@ const DashBoardPage = () => {
                   </Group>
                 </Card>
               ))}
+              {proximosCuatro.length === 0 && (
+                <Text c="dimmed" size="sm">
+                  No tienes eventos proximos
+                </Text>
+              )}
             </Stack>
           </Card>
         </Grid.Col>
@@ -244,6 +267,13 @@ const DashBoardPage = () => {
             </Card>
           </Grid.Col>
         ))}
+        {misGrupos.length === 0 && (
+          <Grid.Col span={12}>
+            <Text c="dimmed" size="sm">
+              No perteneces a ningun grupo todavia
+            </Text>
+          </Grid.Col>
+        )}
       </Grid>
     </div>
   );

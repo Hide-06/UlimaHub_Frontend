@@ -68,9 +68,14 @@ const CalendarPage = () => {
 
   const [nuevoTitulo, setNuevoTitulo] = useState('');
   const [nuevoTipo, setNuevoTipo] = useState<string | null>(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    cargarEventos().then(setEventos);
+    cargarEventos()
+      .then(setEventos)
+      .catch(() => setError('No se pudo conectar con el servidor.'))
+      .finally(() => setCargando(false));
   }, []);
 
   const celdas = getCeldas(mesViendo);
@@ -107,6 +112,18 @@ const CalendarPage = () => {
       <Title order={2} mb="md">
         Calendario
       </Title>
+
+      {cargando && (
+        <Text c="dimmed" mb="md">
+          Cargando calendario...
+        </Text>
+      )}
+
+      {error && (
+        <Text c="red" mb="md">
+          {error}
+        </Text>
+      )}
 
       <div
         style={{

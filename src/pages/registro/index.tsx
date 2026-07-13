@@ -19,9 +19,12 @@ const RegistroPage = () => {
   const [password, setPassword] = useState('');
   const [confirmar, setConfirmar] = useState('');
   const [ciclo, setCiclo] = useState('');
+  const [carrera, setCarrera] = useState('');
   const [error, setError] = useState('');
+  const [cargando, setCargando] = useState(false);
 
   const manejarRegistro = async () => {
+    if (cargando) return;
     if (!nombre || !email || !password || !confirmar || !ciclo) {
       setError('Por favor, complete todos los campos');
       return;
@@ -36,22 +39,28 @@ const RegistroPage = () => {
       setError('Debe usar su correo institucional (@aloe.ulima.edu.pe)');
       return;
     }
+    setCargando(true);
+    try {
+      const res = await fetch('http://localhost:3000/api/registro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, email, password, ciclo, carrera }),
+      });
 
-    const res = await fetch('http://localhost:3000/api/registro', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre, email, password, ciclo }),
-    });
+      if (!res.ok) {
+        const datos = await res.json();
+        setError(datos.error);
+        return;
+      }
 
-    if (!res.ok) {
-      const datos = await res.json();
-      setError(datos.error);
-      return;
+      const usuario = await res.json();
+      localStorage.setItem('usuario', JSON.stringify(usuario));
+      navigate('/home');
+    } catch {
+      setError('No se pudo conectar con el servidor. Intenta de nuevo.');
+    } finally {
+      setCargando(false);
     }
-
-    const usuario = await res.json();
-    localStorage.setItem('usuario', JSON.stringify(usuario));
-    navigate('/home');
   };
 
   return (
@@ -63,62 +72,74 @@ const RegistroPage = () => {
             Crea tu cuenta institucional
           </Text>
         </Stack>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            manejarRegistro();
+          }}
+        >
+          <Stack gap="sm">
+            <TextInput
+              label="Nombre completo"
+              placeholder="Tu nombre y apellido"
+              value={nombre}
+              onChange={(e) => setNombre(e.currentTarget.value)}
+            />
+            <TextInput
+              label="Correo institucional"
+              placeholder="usuario@aloe.ulima.edu.pe"
+              value={email}
+              onChange={(e) => setEmail(e.currentTarget.value)}
+            />
+            <Select
+              label="Ciclo"
+              placeholder="Selecciona tu ciclo"
+              data={['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']}
+              value={ciclo}
+              onChange={(valor) => setCiclo(valor || '')}
+            />
+            <TextInput
+              label="Carrera"
+              placeholder="Ej: Ingeniería de Sistemas"
+              value={carrera}
+              onChange={(e) => setCarrera(e.currentTarget.value)}
+            />
+            <PasswordInput
+              label="Contraseña"
+              placeholder="Crea una contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.currentTarget.value)}
+            />
+            <PasswordInput
+              label="Confirmar contraseña"
+              placeholder="Repite tu contraseña"
+              value={confirmar}
+              onChange={(e) => setConfirmar(e.currentTarget.value)}
+            />
 
-        <Stack gap="sm">
-          <TextInput
-            label="Nombre completo"
-            placeholder="Tu nombre y apellido"
-            value={nombre}
-            onChange={(e) => setNombre(e.currentTarget.value)}
-          />
-          <TextInput
-            label="Correo institucional"
-            placeholder="usuario@aloe.ulima.edu.pe"
-            value={email}
-            onChange={(e) => setEmail(e.currentTarget.value)}
-          />
-          <Select
-            label="Ciclo"
-            placeholder="Selecciona tu ciclo"
-            data={['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']}
-            value={ciclo}
-            onChange={(valor) => setCiclo(valor || '')}
-          />
-          <PasswordInput
-            label="Contraseña"
-            placeholder="Crea una contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.currentTarget.value)}
-          />
-          <PasswordInput
-            label="Confirmar contraseña"
-            placeholder="Repite tu contraseña"
-            value={confirmar}
-            onChange={(e) => setConfirmar(e.currentTarget.value)}
-          />
+            {error && (
+              <Text c="red" size="sm">
+                {error}
+              </Text>
+            )}
 
-          {error && (
-            <Text c="red" size="sm">
-              {error}
+            <Button type="submit" fullWidth mt="sm" loading={cargando}>
+              Registrarse
+            </Button>
+
+            <Text ta="center" size="sm" c="dimmed">
+              ¿Ya tienes cuenta?{' '}
+              <Text
+                component="span"
+                c="orange"
+                style={{ cursor: 'pointer' }}
+                onClick={() => navigate('/')}
+              >
+                Inicia sesión
+              </Text>
             </Text>
-          )}
-
-          <Button fullWidth mt="sm" onClick={manejarRegistro}>
-            Registrarse
-          </Button>
-
-          <Text ta="center" size="sm" c="dimmed">
-            ¿Ya tienes cuenta?{' '}
-            <Text
-              component="span"
-              c="orange"
-              style={{ cursor: 'pointer' }}
-              onClick={() => navigate('/')}
-            >
-              Inicia sesión
-            </Text>
-          </Text>
-        </Stack>
+          </Stack>
+        </form>
       </Paper>
     </div>
   );

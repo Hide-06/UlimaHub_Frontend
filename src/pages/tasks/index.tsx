@@ -29,6 +29,13 @@ function colorPorEstado(estado: EstadoTarea) {
   return colores[estado];
 }
 
+const ETIQUETAS_FILTRO: Record<EstadoTarea | 'todos', string> = {
+  todos: 'Todas',
+  pendiente: 'Pendientes',
+  atrasado: 'Atrasados',
+  entregado: 'Entregadas',
+};
+
 const TasksPage = () => {
   const [tareas, setTareas] = useState<Tarea[]>([]);
   const [cursos, setCursos] = useState<Curso[]>([]);
@@ -40,10 +47,16 @@ const TasksPage = () => {
   const [nuevoTitulo, setNuevoTitulo] = useState('');
   const [nuevoCurso, setNuevoCurso] = useState<string | null>(null);
   const [nuevaFecha, setNuevaFecha] = useState<Date | null>(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    cargarTareas().then(setTareas);
-    cargarCursos().then(setCursos);
+    Promise.all([
+      cargarTareas().then(setTareas),
+      cargarCursos().then(setCursos),
+    ])
+      .catch(() => setError('No se pudo conectar con el servidor.'))
+      .finally(() => setCargando(false));
   }, []);
 
   const tareasFiltradas =
@@ -85,6 +98,18 @@ const TasksPage = () => {
         </Button>
       </Group>
 
+      {cargando && (
+        <Text c="dimmed" mb="md">
+          Cargando tareas...
+        </Text>
+      )}
+
+      {error && (
+        <Text c="red" mb="md">
+          {error}
+        </Text>
+      )}
+
       <Group mb="lg">
         {(['todos', 'pendiente', 'atrasado', 'entregado'] as const).map((f) => (
           <Button
@@ -102,11 +127,7 @@ const TasksPage = () => {
             }
             onClick={() => setFiltroActivo(f)}
           >
-            {f === 'todos'
-              ? 'Todas'
-              : f.charAt(0).toUpperCase() +
-                f.slice(1) +
-                (f === 'pendiente' ? 's' : f === 'atrasado' ? 's' : 'as')}
+            {ETIQUETAS_FILTRO[f]}
           </Button>
         ))}
       </Group>

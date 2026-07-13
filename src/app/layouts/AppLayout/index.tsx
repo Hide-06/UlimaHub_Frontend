@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 
 const AppLayout = () => {
-  const [opened, { toggle }] = useDisclosure();
+  const [opened, { toggle, close }] = useDisclosure();
   const navigate = useNavigate();
 
   function cerrarSesion() {
@@ -52,43 +52,78 @@ const AppLayout = () => {
           <Logo />
         </div>
         <ul className="menu-list">
-          <Link to="/home" className="menu-item" title="Inicio">
+          <Link to="/home" className="menu-item" title="Inicio" onClick={close}>
             <House size={20} className="menu-icon" />
             <span className="menu-label">Inicio</span>
           </Link>
-          <Link to="/courses" className="menu-item" title="Cursos">
+          <Link
+            to="/courses"
+            className="menu-item"
+            title="Cursos"
+            onClick={close}
+          >
             <BookOpen size={20} className="menu-icon" />
             <span className="menu-label">Cursos</span>
           </Link>
-          <Link to="/tasks" className="menu-item" title="Tareas">
+          <Link
+            to="/tasks"
+            className="menu-item"
+            title="Tareas"
+            onClick={close}
+          >
             <SquareCheck size={20} className="menu-icon" />
             <span className="menu-label">Tareas</span>
           </Link>
-          <Link to="/calendar" className="menu-item" title="Calendario">
+          <Link
+            to="/calendar"
+            className="menu-item"
+            title="Calendario"
+            onClick={close}
+          >
             <CalendarDays size={20} className="menu-icon" />
             <span className="menu-label">Calendario</span>
           </Link>
-          <Link to="/teams" className="menu-item" title="Grupos">
+          <Link
+            to="/teams"
+            className="menu-item"
+            title="Grupos"
+            onClick={close}
+          >
             <UsersRound size={20} className="menu-icon" />
             <span className="menu-label">Grupos</span>
           </Link>
-          <Link to="/files" className="menu-item" title="Archivos">
+          <Link
+            to="/files"
+            className="menu-item"
+            title="Archivos"
+            onClick={close}
+          >
             <FileText size={20} className="menu-icon" />
             <span className="menu-label">Archivos</span>
           </Link>
-          <Link to="/notes" className="menu-item" title="Apuntes">
+          <Link
+            to="/notes"
+            className="menu-item"
+            title="Apuntes"
+            onClick={close}
+          >
             <Notebook size={20} className="menu-icon" />
             <span className="menu-label">Apuntes</span>
           </Link>
-          <Link to="/search" className="menu-item" title="Busqueda">
+          <Link
+            to="/search"
+            className="menu-item"
+            title="Busqueda"
+            onClick={close}
+          >
             <Search size={20} className="menu-icon" />
             <span className="menu-label">Busqueda</span>
           </Link>
-          <Link to="/chat" className="menu-item" title="Chat">
+          <Link to="/chat" className="menu-item" title="Chat" onClick={close}>
             <MessageCircle size={20} className="menu-icon" />
             <span className="menu-label">Chat</span>
           </Link>
-          <Link to="/user" className="menu-item" title="Perfil">
+          <Link to="/user" className="menu-item" title="Perfil" onClick={close}>
             <UserCircle size={20} className="menu-icon" />
             <span className="menu-label">Perfil</span>
           </Link>

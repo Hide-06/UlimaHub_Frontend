@@ -17,21 +17,24 @@ const ChatPage = () => {
   const [chatSeleccionado, setChatSeleccionado] = useState<Chat | null>(null);
   const [mensajes, setMensajes] = useState<Mensaje[]>([]);
   const [mensaje, setMensaje] = useState('');
+  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    cargarChats().then((chats) => {
-      setChats(chats);
+    cargarChats()
+      .then((chats) => {
+        setChats(chats);
 
-      const grupoActivo = sessionStorage.getItem('grupoActivo')
-        ? JSON.parse(sessionStorage.getItem('grupoActivo')!)
-        : null;
+        const grupoActivo = sessionStorage.getItem('grupoActivo')
+          ? JSON.parse(sessionStorage.getItem('grupoActivo')!)
+          : null;
 
-      const chatInicial = grupoActivo
-        ? chats.find((c) => c.nombre === grupoActivo.nombre) || chats[0]
-        : chats[0];
+        const chatInicial = grupoActivo
+          ? chats.find((c) => c.nombre === grupoActivo.nombre) || chats[0]
+          : chats[0];
 
-      setChatSeleccionado(chatInicial ?? null);
-    });
+        setChatSeleccionado(chatInicial ?? null);
+      })
+      .finally(() => setCargando(false));
   }, []);
 
   useEffect(() => {
@@ -46,6 +49,14 @@ const ChatPage = () => {
     setMensajes(await cargarMensajes(chatSeleccionado.id));
     setMensaje('');
   };
+
+  if (cargando) {
+    return (
+      <div style={{ padding: 20 }}>
+        <Text c="dimmed">Cargando chats...</Text>
+      </div>
+    );
+  }
 
   if (!chatSeleccionado) {
     return (
@@ -82,7 +93,10 @@ const ChatPage = () => {
       <Card withBorder radius="md" className={styles.chatActivo} padding={0}>
         {/* header del chat */}
         <div
-          style={{ padding: '12px 16px', borderBottom: '1px solid #373a40' }}
+          style={{
+            padding: '12px 16px',
+            borderBottom: '1px solid var(--mantine-color-default-border)',
+          }}
         >
           <Title order={4}>{chatSeleccionado.nombre}</Title>
           <Text size="xs" c="dimmed">

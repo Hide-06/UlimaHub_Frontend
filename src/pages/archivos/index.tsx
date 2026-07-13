@@ -48,12 +48,15 @@ function iconoPorTipo(tipo: string) {
 const ArchivosPage = () => {
   const [archivos, setArchivos] = useState<Archivo[]>([]);
   const [cursos, setCursos] = useState<Curso[]>([]);
-  const [cursoSeleccionado, setCursoSeleccionado] = useState('Todos');
   const [modalAbierto, setModalAbierto] = useState(false);
 
   const [nuevoNombre, setNuevoNombre] = useState('');
   const [nuevoCurso, setNuevoCurso] = useState<string | null>(null);
   const [nuevoTipo, setNuevoTipo] = useState<string | null>(null);
+
+  const [cursoSeleccionado, setCursoSeleccionado] = useState(
+    () => sessionStorage.getItem('cursoActivo') || 'Todos'
+  );
 
   useEffect(() => {
     cargarArchivos().then(setArchivos);

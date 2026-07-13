@@ -1,5 +1,3 @@
-import { cargarCursos } from './cursos';
-
 export interface Grupo {
   id: number;
   nombre: string;
@@ -16,6 +14,7 @@ interface GrupoApi {
   maximo: number;
   unido: boolean;
   CursoId: number;
+  Curso: { nombre: string } | null;
 }
 
 const API_URL = 'http://localhost:3000/api/grupos';
@@ -26,10 +25,7 @@ function usuarioActual() {
 
 export async function cargarGrupos(): Promise<Grupo[]> {
   const usuario = usuarioActual();
-  const [res, cursos] = await Promise.all([
-    fetch(`${API_URL}?usuario_id=${usuario.id}`),
-    cargarCursos(),
-  ]);
+  const res = await fetch(`${API_URL}?usuario_id=${usuario.id}`);
   const grupos: GrupoApi[] = await res.json();
 
   return grupos.map((g) => ({
@@ -38,7 +34,7 @@ export async function cargarGrupos(): Promise<Grupo[]> {
     miembros: g.miembros,
     maximo: g.maximo,
     unido: g.unido,
-    curso: cursos.find((c) => c.id === g.CursoId)?.nombre ?? '',
+    curso: g.Curso?.nombre ?? '',
   }));
 }
 
@@ -49,4 +45,24 @@ export async function unirseAGrupo(id: number) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ usuario_id: usuario.id }),
   });
+}
+
+export async function crearGrupo(datos: {
+  nombre: string;
+  maximo: number;
+  cursoId: number;
+}) {
+  await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      nombre: datos.nombre,
+      maximo: datos.maximo,
+      curso_id: datos.cursoId,
+    }),
+  });
+}
+
+export async function eliminarGrupo(id: number) {
+  await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
 }

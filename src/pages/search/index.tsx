@@ -37,12 +37,18 @@ export const IntelligentSearchPage = () => {
   const [archivos, setArchivos] = useState<Archivo[]>([]);
   const [tareas, setTareas] = useState<Tarea[]>([]);
   const [cursos, setCursos] = useState<Curso[]>([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    cargarNotas().then(setNotas);
-    cargarArchivos().then(setArchivos);
-    cargarTareas().then(setTareas);
-    cargarCursos().then(setCursos);
+    Promise.all([
+      cargarNotas().then(setNotas),
+      cargarArchivos().then(setArchivos),
+      cargarTareas().then(setTareas),
+      cargarCursos().then(setCursos),
+    ])
+      .catch(() => setError('No se pudo conectar con el servidor.'))
+      .finally(() => setCargando(false));
   }, []);
 
   const query = searchQuery.toLowerCase().trim();
@@ -75,13 +81,25 @@ export const IntelligentSearchPage = () => {
   return (
     <Stack p="xl" style={{ gap: '24px' }}>
       <div>
-        <Title order={1} style={{ color: 'white' }} mb="xs">
+        <Title order={1} mb="xs">
           Búsqueda Global
         </Title>
         <Text size="sm" c="dimmed">
           Encuentra e ingresa instantáneamente a tus recursos académicos.
         </Text>
       </div>
+
+      {cargando && (
+        <Text size="sm" c="dimmed">
+          Cargando resultados...
+        </Text>
+      )}
+
+      {error && (
+        <Text size="sm" c="red">
+          {error}
+        </Text>
+      )}
 
       <TextInput
         placeholder="Escribe algo para buscar en archivos, apuntes, cursos o tareas..."
@@ -91,9 +109,6 @@ export const IntelligentSearchPage = () => {
         onChange={(e) => setSearchQuery(e.currentTarget.value)}
         styles={{
           input: {
-            backgroundColor: '#1A1B1E',
-            borderColor: 'rgba(255, 255, 255, 0.1)',
-            color: 'white',
             borderRadius: '12px',
           },
         }}
@@ -107,22 +122,12 @@ export const IntelligentSearchPage = () => {
 
       <Grid>
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <Card
-            withBorder
-            radius="md"
-            p="md"
-            style={{ backgroundColor: '#1A1B1E', height: '100%' }}
-          >
+          <Card withBorder radius="md" p="md" style={{ height: '100%' }}>
             <Group mb="xs">
               <Notebook size={18} color="#e8590c" />
-              <Text fw={700} c="white">
-                Apuntes ({apuntesFiltrados.length})
-              </Text>
+              <Text fw={700}>Apuntes ({apuntesFiltrados.length})</Text>
             </Group>
-            <Divider
-              mb="sm"
-              style={{ borderColor: 'rgba(255, 255, 255, 0.05)' }}
-            />
+            <Divider mb="sm" />
             <Stack style={{ gap: '10px' }}>
               {apuntesFiltrados.length > 0 ? (
                 apuntesFiltrados.map((item) => (
@@ -131,15 +136,14 @@ export const IntelligentSearchPage = () => {
                     withBorder
                     p="xs"
                     style={{
-                      backgroundColor: 'rgba(255,255,255,0.02)',
-                      borderColor: 'rgba(255,255,255,0.05)',
+                      backgroundColor: 'var(--mantine-color-default-hover)',
                       cursor: 'pointer',
                     }}
                     onClick={() => navigate('/notes')}
                   >
                     <Group style={{ justifyContent: 'space-between' }}>
                       <div>
-                        <Text fw="bold" size="sm" c="white">
+                        <Text fw="bold" size="sm">
                           {item.title}
                         </Text>
                         <Text size="xs" c="dimmed">
@@ -162,22 +166,12 @@ export const IntelligentSearchPage = () => {
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <Card
-            withBorder
-            radius="md"
-            p="md"
-            style={{ backgroundColor: '#1A1B1E', height: '100%' }}
-          >
+          <Card withBorder radius="md" p="md" style={{ height: '100%' }}>
             <Group mb="xs">
               <FileText size={18} color="#228be6" />
-              <Text fw={700} c="white">
-                Archivos ({archivosFiltrados.length})
-              </Text>
+              <Text fw={700}>Archivos ({archivosFiltrados.length})</Text>
             </Group>
-            <Divider
-              mb="sm"
-              style={{ borderColor: 'rgba(255, 255, 255, 0.05)' }}
-            />
+            <Divider mb="sm" />
             <Stack style={{ gap: '10px' }}>
               {archivosFiltrados.length > 0 ? (
                 archivosFiltrados.map((item) => (
@@ -186,15 +180,14 @@ export const IntelligentSearchPage = () => {
                     withBorder
                     p="xs"
                     style={{
-                      backgroundColor: 'rgba(255,255,255,0.02)',
-                      borderColor: 'rgba(255,255,255,0.05)',
+                      backgroundColor: 'var(--mantine-color-default-hover)',
                       cursor: 'pointer',
                     }}
                     onClick={() => navigate('/files')}
                   >
                     <Group style={{ justifyContent: 'space-between' }}>
                       <div>
-                        <Text fw="bold" size="sm" c="white">
+                        <Text fw="bold" size="sm">
                           {item.nombre}
                         </Text>
                         <Text size="xs" c="dimmed">
@@ -217,22 +210,12 @@ export const IntelligentSearchPage = () => {
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <Card
-            withBorder
-            radius="md"
-            p="md"
-            style={{ backgroundColor: '#1A1B1E', height: '100%' }}
-          >
+          <Card withBorder radius="md" p="md" style={{ height: '100%' }}>
             <Group mb="xs">
               <GraduationCap size={18} color="#12b886" />
-              <Text fw={700} c="white">
-                Cursos ({cursosFiltrados.length})
-              </Text>
+              <Text fw={700}>Cursos ({cursosFiltrados.length})</Text>
             </Group>
-            <Divider
-              mb="sm"
-              style={{ borderColor: 'rgba(255, 255, 255, 0.05)' }}
-            />
+            <Divider mb="sm" />
             <Stack style={{ gap: '10px' }}>
               {cursosFiltrados.length > 0 ? (
                 cursosFiltrados.map((item) => (
@@ -241,15 +224,14 @@ export const IntelligentSearchPage = () => {
                     withBorder
                     p="xs"
                     style={{
-                      backgroundColor: 'rgba(255,255,255,0.02)',
-                      borderColor: 'rgba(255,255,255,0.05)',
+                      backgroundColor: 'var(--mantine-color-default-hover)',
                       cursor: 'pointer',
                     }}
                     onClick={() => navigate('/courses')}
                   >
                     <Group style={{ justifyContent: 'space-between' }}>
                       <div>
-                        <Text fw="bold" size="sm" c="white">
+                        <Text fw="bold" size="sm">
                           {item.nombre}
                         </Text>
                         <Group gap="xs">
@@ -274,22 +256,12 @@ export const IntelligentSearchPage = () => {
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <Card
-            withBorder
-            radius="md"
-            p="md"
-            style={{ backgroundColor: '#1A1B1E', height: '100%' }}
-          >
+          <Card withBorder radius="md" p="md" style={{ height: '100%' }}>
             <Group mb="xs">
               <CheckSquare size={18} color="#fab005" />
-              <Text fw={700} c="white">
-                Tareas ({tareasFiltradas.length})
-              </Text>
+              <Text fw={700}>Tareas ({tareasFiltradas.length})</Text>
             </Group>
-            <Divider
-              mb="sm"
-              style={{ borderColor: 'rgba(255, 255, 255, 0.05)' }}
-            />
+            <Divider mb="sm" />
             <Stack style={{ gap: '10px' }}>
               {tareasFiltradas.length > 0 ? (
                 tareasFiltradas.map((item) => (
@@ -298,15 +270,14 @@ export const IntelligentSearchPage = () => {
                     withBorder
                     p="xs"
                     style={{
-                      backgroundColor: 'rgba(255,255,255,0.02)',
-                      borderColor: 'rgba(255,255,255,0.05)',
+                      backgroundColor: 'var(--mantine-color-default-hover)',
                       cursor: 'pointer',
                     }}
                     onClick={() => navigate('/tasks')}
                   >
                     <Group style={{ justifyContent: 'space-between' }}>
                       <div>
-                        <Text fw="bold" size="sm" c="white">
+                        <Text fw="bold" size="sm">
                           {item.titulo}
                         </Text>
                         <Text size="xs" c="red">
