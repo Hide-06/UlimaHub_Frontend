@@ -7,7 +7,7 @@ export interface Curso {
   ciclo: number;
 }
 
-const API_URL = 'http://localhost:3000/api/cursos';
+const API_URL = `${import.meta.env.VITE_API_URL}/api/cursos`;
 
 function usuarioActual() {
   return JSON.parse(localStorage.getItem('usuario')!);

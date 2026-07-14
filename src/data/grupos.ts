@@ -17,7 +17,7 @@ interface GrupoApi {
   Curso: { nombre: string } | null;
 }
 
-const API_URL = 'http://localhost:3000/api/grupos';
+const API_URL = `${import.meta.env.VITE_API_URL}/api/grupos`;
 
 function usuarioActual() {
   return JSON.parse(localStorage.getItem('usuario')!);

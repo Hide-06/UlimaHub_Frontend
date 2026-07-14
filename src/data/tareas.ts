@@ -18,7 +18,7 @@ interface TareaApi {
   CursoId: number;
 }
 
-const API_URL = 'http://localhost:3000/api/tareas';
+const API_URL = `${import.meta.env.VITE_API_URL}/api/tareas`;
 
 function usuarioActual() {
   return JSON.parse(localStorage.getItem('usuario')!);

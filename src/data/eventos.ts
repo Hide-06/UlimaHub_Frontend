@@ -5,7 +5,7 @@ export interface Evento {
   tipo: 'tarea' | 'examen';
 }
 
-const API_URL = 'http://localhost:3000/api/eventos';
+const API_URL = `${import.meta.env.VITE_API_URL}/api/eventos`;
 
 function usuarioActual() {
   return JSON.parse(localStorage.getItem('usuario')!);

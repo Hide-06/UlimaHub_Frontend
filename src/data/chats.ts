@@ -20,7 +20,7 @@ interface MensajeApi {
   Autor?: { nombre: string };
 }
 
-const API_URL = 'http://localhost:3000/api/chats';
+const API_URL = `${import.meta.env.VITE_API_URL}/api/chats`;
 
 function usuarioActual() {
   return JSON.parse(localStorage.getItem('usuario')!);

@@ -41,7 +41,7 @@ const RegistroPage = () => {
     }
     setCargando(true);
     try {
-      const res = await fetch('http://localhost:3000/api/registro', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/registro`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nombre, email, password, ciclo, carrera }),
