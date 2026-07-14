@@ -102,6 +102,13 @@ const ArchivosPage = () => {
       </div>
 
       <Grid>
+        {archivosFiltrados.length === 0 && (
+          <Grid.Col span={12}>
+            <Text c="dimmed" size="sm">
+              Todavía no hay archivos subidos.
+            </Text>
+          </Grid.Col>
+        )}
         {archivosFiltrados.map((archivo) => (
           <Grid.Col key={archivo.id} span={4}>
             <Card

@@ -55,6 +55,11 @@ const NotasSidebar = ({
     <Divider mb="sm" />
     <ScrollArea style={{ flex: 1 }} type="hover">
       <Stack style={{ gap: '8px' }}>
+        {notas.length === 0 && (
+          <Text c="dimmed" size="sm" ta="center" mt="md">
+            Todavía no tienes notas.
+          </Text>
+        )}
         {notas.map((nota) => (
           <Group key={nota.id} justify="space-between" align="center" pr={4}>
             <NavLink
