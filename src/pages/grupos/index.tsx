@@ -86,6 +86,12 @@ const GruposPage = () => {
         <Button onClick={() => setModalAbierto(true)}>Crear grupo</Button>
       </div>
 
+      {grupos.length === 0 && (
+        <Text c="dimmed" size="sm">
+          Todavía no hay grupos de estudio.
+        </Text>
+      )}
+
       <Grid>
         {grupos.map((grupo) => (
           <Grid.Col key={grupo.id} span={{ base: 12, sm: 6, md: 4 }}>
