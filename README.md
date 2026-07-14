@@ -1,36 +1,19 @@
-# 📘 ULima Hub — Frontend
+# ULima Hub — Frontend
 
-ULima Hub es una plataforma académica moderna para estudiantes de la Universidad de Lima.  
-Centraliza cursos, tareas, calendario, notas, chat y herramientas de productividad en un solo sistema.
+ULima Hub es una plataforma académica para estudiantes de la Universidad de Lima.
+Centraliza cursos, tareas, calendario, notas, chat y archivos en un solo sistema.
 
 ---
 
-# 🚀 Stack tecnológico
+# Stack tecnológico
 
 - [React-Vite-Ts-template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts)
-- [React Router (Data APIs)](https://reactrouter.com/start/data/routing)
+- [React Router](https://reactrouter.com/)
 - [Mantine UI](https://mantine.dev/)
 
 ---
 
-# 🧱 Arquitectura del proyecto
-
-Este proyecto sigue una arquitectura modular basada en **separación por responsabilidades + features**.
-
-> ⚠️ **IMPORTANTE**
-> Leer especificaion de la arquitectura [Arhitecture.md](./Architecture.md).
-
-## Principios clave
-
-- Separación clara entre UI y lógica de negocio
-- Arquitectura basada en features (dominio)
-- React Router Data para manejo de rutas y datos
-- Backend desacoplado (API externa)
-- Componentes reutilizables y escalables
-
----
-
-# 📁 Estructura de carpetas
+# Estructura de carpetas
 
 ```txt
 src/
@@ -38,71 +21,58 @@ src/
 ├── main.tsx
 │
 ├── app/
-│   ├── router/
 │   ├── layouts/
-│   ├── providers/
 │   ├── theme/
-│   └── config/
+│   └── RutaProtegida.tsx
 │
-├── routes/
-│   ├── auth/
-│   ├── dashboard/
+├── pages/
+│   ├── home/
+│   ├── login/
+│   ├── registro/
 │   ├── courses/
 │   ├── tasks/
 │   ├── calendar/
-│   ├── chat/
 │   ├── notes/
-│   ├── files/
-│   ├── ai/
-│   └── settings/
-│
-├── features/
-│   ├── auth/
-│   ├── courses/
-│   ├── tasks/
+│   ├── grupos/
+│   ├── archivos/
 │   ├── chat/
-│   ├── notes/
-│   └── ai/
+│   ├── user/
+│   └── search/
 │
-├── services/
-│   ├── api/
-│   ├── websocket/
-│   └── auth/
+├── data/
 │
 ├── components/
-│   ├── ui/
-│   └── shared/
 │
 ├── hooks/
 │
 ├── types/
 │
-├── utils/
-│
-└── assets/
+└── utils/
 ```
 
 ---
 
 # Backend
 
-El backend vive en `server/` (Node + Express + Sequelize + PostgreSQL).
+El backend de este proyecto vive en un repositorio aparte: `UlimaHub_Backend`.
 
 ## Cómo correr el proyecto completo
 
-1. Levantar el backend (ver `server/README.md` para instalar Postgres):
+1. Clonar y levantar el backend (ver el README de ese repo para instalar Postgres y las variables de entorno).
+
+2. En este repo, crear un archivo `.env.local` con la URL del backend en local:
 
 ```
-cd server
-npm install
-npm start
+VITE_API_URL=http://localhost:3000
 ```
 
-2. En otra terminal, levantar el frontend:
+3. Instalar dependencias y correr:
 
 ```
 npm install
 npm run dev
 ```
 
-El frontend corre en `http://localhost:5173` y llama a la API en `http://localhost:3000`.
+El frontend corre en `http://localhost:5173`.
+
+Para producción, la variable `VITE_API_URL` se toma de `.env.production` y debe apuntar al backend ya deployado.
