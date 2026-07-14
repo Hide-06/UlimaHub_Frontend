@@ -21,6 +21,7 @@ import {
 const AppLayout = () => {
   const [opened, { toggle, close }] = useDisclosure();
   const navigate = useNavigate();
+  const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
 
   function cerrarSesion() {
     sessionStorage.clear();
@@ -39,9 +40,18 @@ const AppLayout = () => {
       withBorder={false}
     >
       <AppShell.Header style={{ background: '#1e1e1e' }}>
-        <Flex align="center" gap="sm" px={10} h="100%">
-          <Burger opened={opened} onClick={toggle} color="white" />
-          <h2 style={{ color: 'white', margin: 0, fontSize: 18 }}>Ulima Hub</h2>
+        <Flex align="center" justify="space-between" gap="sm" px={10} h="100%">
+          <Flex align="center" gap="sm">
+            <Burger opened={opened} onClick={toggle} color="white" />
+            <h2 style={{ color: 'white', margin: 0, fontSize: 18 }}>
+              Ulima Hub
+            </h2>
+          </Flex>
+          {usuario.nombre && (
+            <span style={{ color: '#aaa', fontSize: 14 }}>
+              Hola, {usuario.nombre.split(' ')[0]}
+            </span>
+          )}
         </Flex>
       </AppShell.Header>
 
