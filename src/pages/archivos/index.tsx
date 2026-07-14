@@ -11,10 +11,14 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
-import { FileText, FileSpreadsheet, File } from 'lucide-react';
+import { FileText, FileSpreadsheet, File, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import styles from './Archivos.module.css';
-import { cargarArchivos, subirArchivo } from '../../data/archivos';
+import {
+  cargarArchivos,
+  subirArchivo,
+  eliminarArchivo,
+} from '../../data/archivos';
 import type { Archivo } from '../../data/archivos';
 import { cargarCursos } from '../../data/cursos';
 import type { Curso } from '../../data/cursos';
@@ -84,6 +88,12 @@ const ArchivosPage = () => {
     setModalAbierto(false);
   }
 
+  async function manejarEliminarArchivo(id: number) {
+    if (!window.confirm('¿Seguro que deseas eliminar este archivo?')) return;
+    setArchivos(archivos.filter((a) => a.id !== id));
+    await eliminarArchivo(id);
+  }
+
   return (
     <div className={styles.contenedor}>
       <div className={styles.encabezado}>
@@ -118,7 +128,18 @@ const ArchivosPage = () => {
               withBorder
               className={styles.tarjeta}
             >
-              <div className={styles.icono}>{iconoPorTipo(archivo.tipo)}</div>
+              <Group justify="space-between">
+                <div className={styles.icono}>{iconoPorTipo(archivo.tipo)}</div>
+                <Button
+                  size="xs"
+                  variant="subtle"
+                  color="red"
+                  px={4}
+                  onClick={() => manejarEliminarArchivo(archivo.id)}
+                >
+                  <Trash2 size={14} />
+                </Button>
+              </Group>
 
               <Text fw="bold" size="sm" lineClamp={2}>
                 {archivo.nombre}

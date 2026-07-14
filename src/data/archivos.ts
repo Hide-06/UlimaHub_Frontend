@@ -55,3 +55,7 @@ export async function subirArchivo(datos: {
     }),
   });
 }
+
+export async function eliminarArchivo(id: number) {
+  await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+}
